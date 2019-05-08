@@ -36,12 +36,12 @@ for:
       only:
         - image: Visual Studio 2017
     before_build:
-      - dotnet restore src/PerformanceCounters.sln
+      - dotnet restore ./src/PerformanceCounters.sln
     after_test:
       - dotnet pack ./src/PerformanceCounters/PerformanceCounters.csproj --configuration Release --no-restore --no-build --output ./../../artifacts -p:PackageVersion=$(appveyor_build_version)
 
 build:
-  project: src/src/PerformanceCounters.sln
+  project: src/PerformanceCounters.sln
   publish_nuget: false
   publish_aspnet_core: false
   publish_core_console: false
