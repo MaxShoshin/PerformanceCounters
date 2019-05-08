@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{93BB8265-A93D-4F30-BD65-299F90B84CDB}"
 ProjectSection(SolutionItems) = preProject
 	..\readme.markdown = ..\readme.markdown
+	..\appveyor.yml = ..\appveyor.yml
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceCounters.WebApi", "PerformanceCounters.WebApi\PerformanceCounters.WebApi.csproj", "{1E6E5679-B21F-45A3-86D4-952C80EB181A}"

@@ -1,0 +1,50 @@
+image:
+- Visual Studio 2017
+
+version: 0.1.0.{build}
+
+# Only clone the current branch and no history
+clone_depth: 1
+
+pull_requests:
+  # Do not increment build number for pull requests
+  do_not_increment_build_number: true
+
+nuget:
+  # Do not publish NuGet packages for pull requests
+  disable_publish_on_pr: true
+
+environment:
+  # Set the DOTNET_SKIP_FIRST_TIME_EXPERIENCE environment variable to stop wasting time caching packages
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  # Disable sending usage data to Microsoft
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+skip_commits:
+  files:
+    - readme.markdown
+
+init:
+  - git config --global core.autocrlf false
+
+configuration:
+  - Release
+
+for:
+  -
+    matrix:
+      only:
+        - image: Visual Studio 2017
+    before_build:
+      - dotnet restore src/PerformanceCounters.sln
+    after_test:
+      - dotnet pack ./src/PerformanceCounters/PerformanceCounters.csproj --configuration Release --no-restore --no-build --output ./../../artifacts -p:PackageVersion=$(appveyor_build_version)
+
+build:
+  project: src/src/PerformanceCounters.sln
+  publish_nuget: false
+  publish_aspnet_core: false
+  publish_core_console: false
+  verbosity: minimal
+
+deploy: off
