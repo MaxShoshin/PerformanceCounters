@@ -30,6 +30,10 @@ init:
 configuration:
   - Release
 
+artifacts:
+  - path: '**\*.nupkg'
+    name: nupkg
+
 build_script:
   - dotnet restore ./src/PerformanceCounters.sln
   - dotnet build ./src/PerformanceCounters.sln --configuration Release
