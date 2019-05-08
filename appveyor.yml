@@ -42,8 +42,12 @@ build_script:
   - dotnet pack ./src/PerformanceCounters/PerformanceCounters.csproj --configuration Release --no-restore --no-build -p:PackageVersion=%APPVEYOR_BUILD_VERSION%
 
 deploy: off
-  #provider: NuGet
-  #api_key:
-  #  secure:
-  #skip_symbols: false
-  #artifact: /.*\.nupkg/
+#deploy:
+#  - provider: NuGet
+#    api_key:
+#      secure:
+#    skip_symbols: true
+#    artifact: /.*\.nupkg/
+
+#after_deploy:
+#  - ps : Get-ChildItem .\**\*.snupkg | % { dotnet nuget push $_.FullName -s https://api.nuget.org/v3/index.json -k $env:NUGET_DEPLOY_SECRET }
