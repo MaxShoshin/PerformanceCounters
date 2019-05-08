@@ -18,6 +18,7 @@
     <Title>PerformanceCounters</Title>
     <PackageProjectUrl>https://github.com/MaxShoshin/PerformanceCounters</PackageProjectUrl>
     <RepositoryUrl>https://github.com/MaxShoshin/PerformanceCounters</RepositoryUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/MaxShoshin/PerformanceCounters/master/LICENSE</PackageLicenseUrl>    
   </PropertyGroup>
 
   <ItemGroup>
