@@ -33,6 +33,6 @@ configuration:
 build_script:
   - dotnet restore ./src/PerformanceCounters.sln
   - dotnet build ./src/PerformanceCounters.sln --configuration Release
-  - dotnet pack ./src/PerformanceCounters/PerformanceCounters.csproj --configuration Release --no-restore --no-build --output ./../../artifacts -p:PackageVersion=$(appveyor_build_version)
+  - dotnet pack ./src/PerformanceCounters/PerformanceCounters.csproj --configuration Release --no-restore --no-build --output ./../../artifacts -p:PackageVersion=%APPVEYOR_BUILD_VERSION%
 
 deploy: off
