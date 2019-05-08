@@ -18,7 +18,8 @@
     <Title>PerformanceCounters</Title>
     <PackageProjectUrl>https://github.com/MaxShoshin/PerformanceCounters</PackageProjectUrl>
     <RepositoryUrl>https://github.com/MaxShoshin/PerformanceCounters</RepositoryUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/MaxShoshin/PerformanceCounters/master/LICENSE</PackageLicenseUrl>    
+    <PackageLicenseUrl>https://raw.githubusercontent.com/MaxShoshin/PerformanceCounters/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,6 +28,10 @@
   
   <ItemGroup>
     <Reference Include="System.Configuration.Install" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".\..\..\LICENSE" Pack="true" PackagePath="LICENSE"/>
   </ItemGroup>
   
 </Project>
