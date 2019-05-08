@@ -117,7 +117,7 @@ namespace NeedfulThings.PerformanceCounters
 				{
 					var instanceName = categoryType == PerformanceCounterCategoryType.SingleInstance
 						                   ? string.Empty
-						                   : Process.GetCurrentProcess().ProcessName;
+						                   : GetInstanceName();
 
 					var counter = new PerformanceCounter(categoryName, counterName, instanceName, readOnly);
 					return new PerformanceCounterProxy(counter);
@@ -128,6 +128,13 @@ namespace NeedfulThings.PerformanceCounters
 			}
 
 			return new NullPerformanceCounter(counterName, counterType);
+		}
+
+		private static string GetInstanceName()
+		{
+			var process = Process.GetCurrentProcess();
+
+			return $"{process.ProcessName}#{process.Id}";
 		}
 
 		private static PerformanceCounterAttribute GetCounterAttribute(PropertyInfo propertyInfo)
