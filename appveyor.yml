@@ -33,6 +33,11 @@ configuration:
 build_script:
   - dotnet restore ./src/PerformanceCounters.sln
   - dotnet build ./src/PerformanceCounters.sln --configuration Release
-  - dotnet pack ./src/PerformanceCounters/PerformanceCounters.csproj --configuration Release --no-restore --no-build --output ./../../artifacts -p:PackageVersion=%APPVEYOR_BUILD_VERSION%
+  - dotnet pack ./src/PerformanceCounters/PerformanceCounters.csproj --configuration Release --no-restore --no-build -p:PackageVersion=%APPVEYOR_BUILD_VERSION%
 
 deploy: off
+  #provider: NuGet
+  #api_key:
+  #  secure: m49OJ7+Jdt9an3jPcTukHA==
+  #skip_symbols: false
+  #artifact: /.*\.nupkg/
