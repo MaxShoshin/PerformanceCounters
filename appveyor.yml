@@ -1,0 +1,53 @@
+image:
+- Visual Studio 2017
+
+version: 0.1.0.{build}
+
+# Only clone the current branch and no history
+clone_depth: 1
+
+pull_requests:
+  # Do not increment build number for pull requests
+  do_not_increment_build_number: true
+
+nuget:
+  # Do not publish NuGet packages for pull requests
+  disable_publish_on_pr: true
+
+environment:
+  # Set the DOTNET_SKIP_FIRST_TIME_EXPERIENCE environment variable to stop wasting time caching packages
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  # Disable sending usage data to Microsoft
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+skip_commits:
+  files:
+    - readme.markdown
+
+init:
+  - git config --global core.autocrlf false
+
+configuration:
+  - Release
+
+artifacts:
+  - path: '**\*.nupkg'
+    name: nupkg
+  - path: '**\*.snupkg'
+    name: snupkg
+
+build_script:
+  - dotnet restore ./src/PerformanceCounters.sln
+  - dotnet build ./src/PerformanceCounters.sln --configuration Release
+  - dotnet pack ./src/PerformanceCounters/PerformanceCounters.csproj --configuration Release --no-restore --no-build -p:PackageVersion=%APPVEYOR_BUILD_VERSION%
+
+
+deploy:
+  - provider: NuGet
+    api_key:
+      secure: DffMWWCwTaakvK+ao6iDnFw35kxWyr9rvWhJj8zfUt4kB65YXE+haIz3w/psAIxy
+    skip_symbols: true
+    artifact: /.*\.nupkg/
+
+after_deploy:
+  - ps : Get-ChildItem .\**\*.snupkg | % { dotnet nuget push $_.FullName -s https://api.nuget.org/v3/index.json -k $env:NUGET_DEPLOY_SECRET }
