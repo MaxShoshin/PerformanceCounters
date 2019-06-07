@@ -40,7 +40,7 @@ namespace NeedfulThings.PerformanceCounters
 			return installer;
 		}
 
-		public static T GetCounters<T>() where T : class, IPerformanceCounterSet
+		public static T GetCounters<T>(string instanceName = null) where T : class, IPerformanceCounterSet
 		{
 			lock (_counters)
 			{
@@ -49,7 +49,7 @@ namespace NeedfulThings.PerformanceCounters
 				{
 					var counterSetType = CounterSetTypeEmitter.GeneratePerformanceCounterSetImplementation(typeof(T));
 					var category = Helper.GetCategoryAttribute(typeof(T));
-					var performanceCounters = GetPerformanceCounters<T>();
+					var performanceCounters = GetPerformanceCounters<T>(instanceName);
 
 					var arguments = new object[performanceCounters.Count + 2];
 					arguments[0]= category.CategoryName;
@@ -68,7 +68,7 @@ namespace NeedfulThings.PerformanceCounters
 			}
 		}
 
-		private static IReadOnlyList<IReadOnlyPerformanceCounter> GetPerformanceCounters<T>()
+		private static IReadOnlyList<IReadOnlyPerformanceCounter> GetPerformanceCounters<T>(string instanceName)
 		{
 			var type = typeof (T);
 			var categoryAttribute = Helper.GetCategoryAttribute(type);
@@ -93,8 +93,8 @@ namespace NeedfulThings.PerformanceCounters
 				}
 
 				var counter = GetInstance(categoryAttribute, counterAttribute,
-					propertyInfo.PropertyType ==
-					typeof (IReadOnlyPerformanceCounter));
+					propertyInfo.PropertyType == typeof (IReadOnlyPerformanceCounter),
+					instanceName);
 
 				counters.Add(counter);
 			}
@@ -103,24 +103,37 @@ namespace NeedfulThings.PerformanceCounters
 		}
 
 		private static IPerformanceCounter GetInstance(PerformanceCounterCategoryAttribute categoryAttribute,
-		                                                PerformanceCounterAttribute counterAttribute, bool readOnly)
+			PerformanceCounterAttribute counterAttribute,
+			bool readOnly,
+			string customInstanceName)
 		{
 			var categoryName = categoryAttribute.CategoryName;
 			var categoryType = categoryAttribute.CategoryType;
 			var counterName = counterAttribute.CounterName;
 			var counterType = counterAttribute.CounterType;
+			var instanceNameType = categoryAttribute.InstanceNameType;
 
 			try
 			{
 				if (PerformanceCounterCategory.Exists(categoryName) &&
 				    PerformanceCounterCategory.CounterExists(counterName, categoryName))
 				{
-					var instanceName = categoryType == PerformanceCounterCategoryType.SingleInstance
-						                   ? string.Empty
-						                   : GetInstanceName();
+					var counter = new PerformanceCounter
+					{
+						CategoryName = categoryName,
+						CounterName = counterName,
+						InstanceName = categoryType == PerformanceCounterCategoryType.SingleInstance
+							? string.Empty
+							: customInstanceName ?? GetInstanceName(),
+						ReadOnly = readOnly,
+					};
 
-					var counter = new PerformanceCounter(categoryName, counterName, instanceName, readOnly);
-					return new PerformanceCounterProxy(counter);
+					if (categoryType == PerformanceCounterCategoryType.MultiInstance && !readOnly)
+					{
+						counter.InstanceLifetime = PerformanceCounterInstanceLifetime.Process;
+					}
+
+					return new PerformanceCounterWrapper(new PerformanceCounterProxy(counter));
 				}
 			}
 			catch

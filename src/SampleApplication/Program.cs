@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.ServiceModel;
+using NeedfulThings.PerformanceCounters;
 using NeedfulThings.PerformanceCounters.WebApi;
 
 namespace SampleApplication
@@ -23,6 +24,8 @@ namespace SampleApplication
 			var container = builder.Build();
 			config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
 
+
+
 			using (var server = new HttpSelfHostServer(config))
 			{
 			    try
@@ -40,10 +43,14 @@ namespace SampleApplication
 
 				Console.WriteLine("Press any key to exit...");
 
+				var sampleCounters = PerformanceCounterFactory.GetCounters<SampleCounters>();
+
                 // simulate memory pressure
 				var random = new Random();
 				while (true)
 				{
+					sampleCounters.RequestsTotalCount.Increment();
+
 					var n = random.Next(100);
 					while (n-- > 0)
 					{
