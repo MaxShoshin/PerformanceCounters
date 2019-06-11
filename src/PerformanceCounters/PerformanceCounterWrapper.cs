@@ -1,17 +1,15 @@
 namespace NeedfulThings.PerformanceCounters
 {
-    using System;
     using System.Diagnostics;
 
     internal sealed class PerformanceCounterWrapper : IPerformanceCounter
     {
-        private readonly IPerformanceCounter _nullPerformanceCounter;
+        private readonly PerformanceCounterProxyFactory _counterProxyFactory;
         private IPerformanceCounter _innerCounter;
 
-        public PerformanceCounterWrapper(IPerformanceCounter innerCounter)
+        public PerformanceCounterWrapper(PerformanceCounterProxyFactory counterProxyFactory)
         {
-            _nullPerformanceCounter = new NullPerformanceCounter(innerCounter.CounterName, innerCounter.CounterType);
-            _innerCounter = innerCounter;
+            _counterProxyFactory = counterProxyFactory;
         }
 
         public string CounterName => _innerCounter.CounterName;
@@ -26,7 +24,7 @@ namespace NeedfulThings.PerformanceCounters
             }
             catch
             {
-                ChangeCounter(_nullPerformanceCounter);
+                ChangeCounter();
 
                 return _innerCounter.NextValue();
             }
@@ -40,7 +38,7 @@ namespace NeedfulThings.PerformanceCounters
             }
             catch
             {
-                ChangeCounter(_nullPerformanceCounter);
+                ChangeCounter();
             }
         }
 
@@ -52,7 +50,7 @@ namespace NeedfulThings.PerformanceCounters
             }
             catch
             {
-                ChangeCounter(_nullPerformanceCounter);
+                ChangeCounter();
             }
         }
 
@@ -64,7 +62,7 @@ namespace NeedfulThings.PerformanceCounters
             }
             catch
             {
-                ChangeCounter(_nullPerformanceCounter);
+                ChangeCounter();
             }
         }
 
@@ -76,18 +74,23 @@ namespace NeedfulThings.PerformanceCounters
             }
             catch
             {
-                ChangeCounter(_nullPerformanceCounter);
+                ChangeCounter();
             }
         }
 
-        public void ChangeCounter(IPerformanceCounter performanceCounter)
+        public void ChangeCounter()
         {
-            _innerCounter = performanceCounter ?? throw new ArgumentNullException(nameof(performanceCounter));
+            Initialize();
         }
 
         public void Dispose()
         {
             _innerCounter.Dispose();
+        }
+
+        public void Initialize()
+        {
+            _innerCounter = _counterProxyFactory.Create();
         }
     }
 }

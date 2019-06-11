@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using System.ServiceModel;
 using NeedfulThings.PerformanceCounters;
 using NeedfulThings.PerformanceCounters.WebApi;
@@ -15,7 +16,11 @@ namespace SampleApplication
 	{
 		static void Main(string[] args)
 		{
-			var config = new HttpSelfHostConfiguration("http://localhost:2707/");
+			var defaultPort = 2707;
+			var processName = Process.GetCurrentProcess().ProcessName;
+			defaultPort += Process.GetProcesses().Count(item => item.ProcessName == processName) - 1;
+
+			var config = new HttpSelfHostConfiguration(string.Format("http://localhost:{0}/", defaultPort));
 		    config.UsePerformanceCounters("counters");
 
 			var builder = new ContainerBuilder();
@@ -23,8 +28,6 @@ namespace SampleApplication
 
 			var container = builder.Build();
 			config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
-
-
 
 			using (var server = new HttpSelfHostServer(config))
 			{
@@ -39,7 +42,7 @@ namespace SampleApplication
 			        return;
 			    }
 
-			    Process.Start("http://localhost:2707/counters");
+			    Process.Start(string.Format("http://localhost:{0}/counters", defaultPort));
 
 				Console.WriteLine("Press any key to exit...");
 

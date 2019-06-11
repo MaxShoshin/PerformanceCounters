@@ -4,7 +4,7 @@ namespace SampleApplication
 {
 	using System.Diagnostics;
 
-	[PerformanceCounterCategory(".NET CLR Jit", PerformanceCounterCategoryType.MultiInstance)]
+	[PerformanceCounterCategory(".NET CLR Jit", PerformanceCounterCategoryType.MultiInstance, InstanceNameType.DotNetProcess)]
 	public interface ClrJitCounters : IPerformanceCounterSet
 	{
 		[PerformanceCounter("# of IL Bytes Jitted")]

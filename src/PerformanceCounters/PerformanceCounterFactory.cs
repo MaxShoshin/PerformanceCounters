@@ -12,6 +12,8 @@ namespace NeedfulThings.PerformanceCounters
 		private static readonly Dictionary<Type, IPerformanceCounterSet> _counters =
 			new Dictionary<Type, IPerformanceCounterSet>();
 
+		private static readonly InstanceNameProvider _instanceNameProvider = new InstanceNameProvider();
+
 		public static PerformanceCounterInstaller GetInstallerFor<T>() where T : IPerformanceCounterSet
 		{
 			var category = Helper.GetCategoryAttribute(typeof (T));
@@ -107,47 +109,10 @@ namespace NeedfulThings.PerformanceCounters
 			bool readOnly,
 			string customInstanceName)
 		{
-			var categoryName = categoryAttribute.CategoryName;
-			var categoryType = categoryAttribute.CategoryType;
-			var counterName = counterAttribute.CounterName;
-			var counterType = counterAttribute.CounterType;
-			var instanceNameType = categoryAttribute.InstanceNameType;
-
-			try
-			{
-				if (PerformanceCounterCategory.Exists(categoryName) &&
-				    PerformanceCounterCategory.CounterExists(counterName, categoryName))
-				{
-					var counter = new PerformanceCounter
-					{
-						CategoryName = categoryName,
-						CounterName = counterName,
-						InstanceName = categoryType == PerformanceCounterCategoryType.SingleInstance
-							? string.Empty
-							: customInstanceName ?? GetInstanceName(),
-						ReadOnly = readOnly,
-					};
-
-					if (categoryType == PerformanceCounterCategoryType.MultiInstance && !readOnly)
-					{
-						counter.InstanceLifetime = PerformanceCounterInstanceLifetime.Process;
-					}
-
-					return new PerformanceCounterWrapper(new PerformanceCounterProxy(counter));
-				}
-			}
-			catch
-			{
-			}
-
-			return new NullPerformanceCounter(counterName, counterType);
-		}
-
-		private static string GetInstanceName()
-		{
-			var process = Process.GetCurrentProcess();
-
-			return $"{process.ProcessName}#{process.Id}";
+			var factory = new PerformanceCounterProxyFactory(categoryAttribute, counterAttribute, _instanceNameProvider, readOnly, customInstanceName);
+			var wrapper = new PerformanceCounterWrapper(factory);
+			wrapper.Initialize();
+			return wrapper;
 		}
 
 		private static PerformanceCounterAttribute GetCounterAttribute(PropertyInfo propertyInfo)

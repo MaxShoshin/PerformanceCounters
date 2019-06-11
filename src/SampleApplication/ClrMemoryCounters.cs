@@ -3,7 +3,7 @@ namespace SampleApplication
 	using System.Diagnostics;
 	using NeedfulThings.PerformanceCounters;
 
-	[PerformanceCounterCategory(".NET CLR Memory", PerformanceCounterCategoryType.MultiInstance)]
+	[PerformanceCounterCategory(".NET CLR Memory", PerformanceCounterCategoryType.MultiInstance, InstanceNameType.DotNetProcess)]
 	public interface ClrMemoryCounters : IPerformanceCounterSet
 	{
 		[PerformanceCounter("# Bytes in all Heaps")]
