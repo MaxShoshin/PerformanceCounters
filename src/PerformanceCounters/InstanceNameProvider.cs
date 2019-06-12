@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 
 namespace NeedfulThings.PerformanceCounters
@@ -18,8 +19,8 @@ namespace NeedfulThings.PerformanceCounters
                     return GetInstanceName("Process", "ID Process");
                 case InstanceNameType.DotNetProcess:
                     return GetInstanceName(".NET CLR Memory", "Process ID");
-                case InstanceNameType.ProcessHash:
-                    return $"{_process.ProcessName}#{_process.Id}";
+                case InstanceNameType.ProcessWithId:
+                    return $"{_process.ProcessName}_{_process.Id}";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(instanceNameType), instanceNameType, null);
             }
@@ -44,10 +45,30 @@ namespace NeedfulThings.PerformanceCounters
 
                 return null;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }
+        }
+
+        public void Validate(PerformanceCounterCategoryType categoryType, InstanceNameType instanceNameType, bool readOnly)
+        {
+            if (readOnly || categoryType == PerformanceCounterCategoryType.SingleInstance)
+            {
+                return;
+            }
+
+            if (instanceNameType == InstanceNameType.None || instanceNameType == InstanceNameType.ProcessWithId)
+            {
+                return;
+            }
+
+            var message = string.Format(
+                CultureInfo.InvariantCulture,
+                "Instance name type {0} is not supported for multi instance PerformanceCounter. Supports only ProcessWithId or None.",
+                instanceNameType);
+
+            throw new NotSupportedException(message);
         }
     }
 }

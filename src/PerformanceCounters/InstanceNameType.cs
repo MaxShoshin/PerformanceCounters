@@ -5,6 +5,6 @@ namespace NeedfulThings.PerformanceCounters
         None,
         SystemProcess,
         DotNetProcess,
-        ProcessHash
+        ProcessWithId
     }
 }

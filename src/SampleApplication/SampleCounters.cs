@@ -3,7 +3,7 @@ namespace SampleApplication
 	using System.Diagnostics;
 	using NeedfulThings.PerformanceCounters;
 
-	[PerformanceCounterCategory("Sample Category", "Everything is so trivial", PerformanceCounterCategoryType.MultiInstance, InstanceNameType.ProcessHash)]
+	[PerformanceCounterCategory("Sample Category", "Everything is so trivial", PerformanceCounterCategoryType.MultiInstance, InstanceNameType.ProcessWithId)]
 	public interface SampleCounters : IPerformanceCounterSet
 	{
 		[PerformanceCounter("#Total Requests", "Total number of executed requests", PerformanceCounterType.NumberOfItems64)]

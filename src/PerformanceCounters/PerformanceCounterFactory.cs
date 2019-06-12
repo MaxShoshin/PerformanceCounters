@@ -104,7 +104,8 @@ namespace NeedfulThings.PerformanceCounters
 			return counters;
 		}
 
-		private static IPerformanceCounter GetInstance(PerformanceCounterCategoryAttribute categoryAttribute,
+		private static IPerformanceCounter GetInstance(
+			PerformanceCounterCategoryAttribute categoryAttribute,
 			PerformanceCounterAttribute counterAttribute,
 			bool readOnly,
 			string customInstanceName)

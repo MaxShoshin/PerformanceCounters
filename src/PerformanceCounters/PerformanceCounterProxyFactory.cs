@@ -33,27 +33,27 @@ namespace NeedfulThings.PerformanceCounters
             var counterType = _counterDescription.CounterType;
             var instanceNameType = _categoryDescription.InstanceNameType;
 
+            _instanceNameProvider.Validate(categoryType, instanceNameType, _readOnly);
+
             try
             {
                 if (PerformanceCounterCategory.Exists(categoryName) &&
                     PerformanceCounterCategory.CounterExists(counterName, categoryName))
                 {
-                    var counter = new PerformanceCounter
-                    (
-                        categoryName,
-                        counterName,
-                        categoryType == PerformanceCounterCategoryType.SingleInstance
+                    var counter = new PerformanceCounter()
+                    {
+                        CategoryName = categoryName,
+                        CounterName = counterName,
+                        InstanceName = categoryType == PerformanceCounterCategoryType.SingleInstance
                             ? string.Empty
                             : _customInstanceName ?? _instanceNameProvider.GetInstanceName(instanceNameType),
-                        _readOnly
-                    );
+                        ReadOnly = _readOnly
+                    };
 
                     if (categoryType == PerformanceCounterCategoryType.MultiInstance && !_readOnly)
                     {
                          counter.InstanceLifetime = PerformanceCounterInstanceLifetime.Process;
                     }
-
-
 
                     return new PerformanceCounterProxy(counter);
                 }
